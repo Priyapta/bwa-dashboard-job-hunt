@@ -15,16 +15,18 @@ import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 
 type InputSkillsProps = {
-  form: UseFormReturn<z.infer<typeof jobFormSchema>>;
+  form: any;
+  name: string;
+  label: string;
 };
-function InputSkills({ form }: InputSkillsProps) {
+function InputSkills({ form, name, label }: InputSkillsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <FormField
       control={form.control}
-      name="requiredSkills"
+      name={name}
       render={({ field }) => {
         const skills: string[] = field.value ?? [];
 
@@ -39,10 +41,19 @@ function InputSkills({ form }: InputSkillsProps) {
         const handleRemoveSkill = (skill: string) => {
           field.onChange(skills.filter((s) => s !== skill));
         };
+        const handleSaveValue = () => {
+          const value = inputRef.current?.value?.trim();
+          if (!value) return;
+          if (skills.includes(value)) return;
+
+          field.onChange([...skills, value]);
+          inputRef.current!.value = "";
+          setIsOpen(false);
+        };
 
         return (
           <FormItem>
-            <FormLabel>Add Skills</FormLabel>
+            <FormLabel>{label}</FormLabel>
 
             <FormControl>
               <>
@@ -53,7 +64,7 @@ function InputSkills({ form }: InputSkillsProps) {
                   onClick={() => setIsOpen((prev) => !prev)}
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />
-                  Add Skill
+                  {label}
                 </Button>
 
                 {isOpen && (

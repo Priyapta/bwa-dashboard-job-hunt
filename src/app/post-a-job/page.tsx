@@ -41,7 +41,16 @@ export default function page() {
   const form = useForm<z.infer<typeof jobFormSchema>>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
+      roles: "",
+      jobType: undefined,
+      salaryFrom: "",
+      salaryTo: "",
+      categoryId: "",
       requiredSkills: [],
+      jobDescription: "",
+      responsibility: "",
+      whoYouAre: "",
+      niceToHaves: "",
       benefits: [],
     },
   });
@@ -189,7 +198,7 @@ export default function page() {
             title="Required Skills"
             subtitle="Add required skills for the job"
           >
-            <InputSkills form={form} />
+            <InputSkills form={form} name="requiredSkills" label="Add Skills" />
           </FieldInput>
           <FieldInput
             title="Job Descriptions"

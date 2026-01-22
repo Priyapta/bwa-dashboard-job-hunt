@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-
+import { Controller } from "react-hook-form";
+import type { Editor } from "@ckeditor/ckeditor5-core";
 type JobDescriptionEditorProps = {
   form: any;
   name: string;
@@ -17,7 +18,6 @@ export function JobDescriptionEditor({
   const [ClassicEditor, setClassicEditor] = useState<any>(null);
 
   useEffect(() => {
-    // dynamic import supaya aman dari SSR
     import("@ckeditor/ckeditor5-react").then((mod) => {
       setCKEditor(() => mod.CKEditor);
     });
@@ -34,18 +34,28 @@ export function JobDescriptionEditor({
   }
 
   return (
-    <div className="rounded-md border p-2">
-      <CKEditor
-        editor={ClassicEditor}
-        data={form.getValues(name) || ""}
-        onChange={(_: any, editor: any) => {
-          const data = editor.getData();
-          form.setValue(name, data, {
-            shouldDirty: true,
-            shouldTouch: true,
-          });
-        }}
-      />
-    </div>
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <div className="rounded-md border p-2">
+          <CKEditor
+            editor={ClassicEditor}
+            data={field.value || ""}
+            onChange={(_: unknown, editor: Editor) => {
+              field.onChange(editor.getData());
+            }}
+            onBlur={field.onBlur}
+          />
+
+          {/* ERROR DARI SCHEMA */}
+          {fieldState.error && (
+            <p className="text-sm text-red-500 mt-1">
+              {fieldState.error.message}
+            </p>
+          )}
+        </div>
+      )}
+    />
   );
 }
