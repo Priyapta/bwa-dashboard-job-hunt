@@ -91,3 +91,10 @@ export const EMPLOYEE_OPTIONS: optionType[] = [
     label: "1000-above",
   },
 ];
+
+export const SocialMediaFormSchema = z.object({
+  facebook: z.string().min(5, { message: "Facebook link is required" }),
+  instagram: z.string().min(5, { message: "Instagram link is required" }),
+  twitter: z.string().min(5, { message: "Twitter link is required" }),
+  youtube: z.string().min(5, { message: "Youtube link is required" }),
+});

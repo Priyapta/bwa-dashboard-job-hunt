@@ -1,4 +1,5 @@
 import OverViewForms from "@/components/forms/overfiewForms";
+import SocialLinksForm from "@/components/forms/SocialLinksForm";
 import Applicants from "@/components/organisms/Applicants";
 import JobDetail from "@/components/organisms/JobDetail";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,14 +12,14 @@ export default function SettingsPage() {
       <Tabs defaultValue="overview">
         <TabsList className="mb-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="socialLinks">Social links</TabsTrigger>
+          <TabsTrigger value="social">Social links</TabsTrigger>
           <TabsTrigger value="teams">Teams</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           <OverViewForms />
         </TabsContent>
-        <TabsContent value="sociallinks">
-          <div>social links</div>
+        <TabsContent value="social">
+          <SocialLinksForm />
         </TabsContent>
         <TabsContent value="teams">
           <div>teams</div>

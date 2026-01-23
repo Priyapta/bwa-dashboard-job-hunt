@@ -126,24 +126,31 @@ export default function OverViewForms() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Location</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-45">
-                        <SelectValue placeholder="Select Location" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LOCATION_OPTIONS.map((col) => (
-                          <SelectItem key={col.id} value={col.id}>
-                            {col.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="w-45">
+                          <SelectValue placeholder="Select Location" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {LOCATION_OPTIONS.map((col) => (
+                            <SelectItem key={col.id} value={col.id}>
+                              {col.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+
+                    <FormMessage />
                   </FormItem>
                 )}
               />
+
               <div className="grid grid-cols-2 gap-4">
                 {" "}
                 <FormField
@@ -152,21 +159,24 @@ export default function OverViewForms() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Employee</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="w-45">
-                          <SelectValue placeholder="Employee" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {EMPLOYEE_OPTIONS.map((col) => (
-                            <SelectItem key={col.id} value={col.id}>
-                              {col.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-45">
+                            <SelectValue placeholder="Employee" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {EMPLOYEE_OPTIONS.map((col) => (
+                              <SelectItem key={col.id} value={col.id}>
+                                {col.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -261,7 +271,9 @@ export default function OverViewForms() {
             />
           </FieldInput>
           <div className="flex justify-end">
-            <Button size="lg">Save Changes</Button>
+            <Button type="submit" size="lg">
+              Save Changes
+            </Button>
           </div>
         </form>
       </Form>
