@@ -98,3 +98,10 @@ export const SocialMediaFormSchema = z.object({
   twitter: z.string().min(5, { message: "Twitter link is required" }),
   youtube: z.string().min(5, { message: "Youtube link is required" }),
 });
+
+export const TeamFormSchema = z.object({
+  name: z.string().min(5, { message: "Name is Required" }),
+  position: z.string().min(5, { message: "Position is Required" }),
+  linkedin: z.string().min(5, { message: "Linkedin is Required" }),
+  instagram: z.string().min(5, { message: "Instagram is Required" }),
+});
