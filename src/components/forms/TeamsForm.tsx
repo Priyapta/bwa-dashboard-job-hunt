@@ -8,11 +8,6 @@ import { TeamFormSchema } from "@/lib/form-schema";
 import z from "zod";
 
 function TeamsForm() {
-  const form = useForm<z.infer<typeof TeamFormSchema>>;
-
-  const onSubmit = (val: z.infer<typeof TeamFormSchema>) => {
-    console.log(val);
-  };
   return (
     <FieldInput
       title="Basic Information"

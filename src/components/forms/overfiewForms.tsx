@@ -96,7 +96,7 @@ export default function OverViewForms() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Copany Name</FormLabel>
+                  <FormLabel>Company Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Twitter" {...field} />
                   </FormControl>
@@ -219,7 +219,7 @@ export default function OverViewForms() {
                             variant="outline"
                             className={cn(
                               "w-[450px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             {field.value ? (

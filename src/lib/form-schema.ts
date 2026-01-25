@@ -1,5 +1,5 @@
 import { JOBTYPES } from "@/constants";
-import { z } from "zod";
+import { email, z } from "zod";
 
 export type optionType = {
   id: string;
@@ -104,4 +104,15 @@ export const TeamFormSchema = z.object({
   position: z.string().min(5, { message: "Position is Required" }),
   linkedin: z.string().min(5, { message: "Linkedin is Required" }),
   instagram: z.string().min(5, { message: "Instagram is Required" }),
+});
+
+export const signInFormSchema = z.object({
+  email: z.string().min(5, { message: "Email is Required" }),
+  password: z.string().min(8, { message: "Password is Required" }),
+});
+
+export const signUpFormSchema = z.object({
+  name: z.string().min(4, { message: "Name is required" }),
+  email: z.string().email({ message: "Email is not valid" }),
+  password: z.string().min(8, { message: "Password is required" }),
 });

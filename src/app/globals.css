@@ -115,8 +115,6 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -173,4 +171,3 @@
     --chart-5: 340 75% 55%;
   }
 }
-
