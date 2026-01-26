@@ -13,8 +13,11 @@ import { Input } from "@/components/ui/input";
 import { signUpFormSchema } from "@/lib/form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 function SignUpPage() {
@@ -25,7 +28,20 @@ function SignUpPage() {
       password: "",
     },
   });
-  const onSubmit = (val: z.infer<typeof signUpFormSchema>) => console.log(val);
+  const router = useRouter();
+
+  const onSubmit = async (val: z.infer<typeof signUpFormSchema>) => {
+    try {
+      await fetch("/api/company/new-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(val),
+      });
+      await router.push("/auth/signin");
+    } catch (error) {
+      (toast("Error"), { description: "Please try again" });
+    }
+  };
   return (
     <div className="relative w-full h-screen">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -43,6 +59,20 @@ function SignUpPage() {
             >
               <FormField
                 control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your name" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -50,7 +80,7 @@ function SignUpPage() {
                     <FormControl>
                       <Input placeholder="Enter your email" {...field} />
                     </FormControl>
-                    <FormDescription>At least 5 character</FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -64,7 +94,7 @@ function SignUpPage() {
                     <FormControl>
                       <Input placeholder="Enter your password" {...field} />
                     </FormControl>
-                    <FormDescription>At least 8 character</FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
