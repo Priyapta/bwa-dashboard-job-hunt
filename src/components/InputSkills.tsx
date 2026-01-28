@@ -1,7 +1,4 @@
 import React, { useRef, useState } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { jobFormSchema } from "@/lib/form-schema";
-import z from "zod";
 import {
   FormControl,
   FormField,
@@ -19,6 +16,7 @@ type InputSkillsProps = {
   name: string;
   label: string;
 };
+
 function InputSkills({ form, name, label }: InputSkillsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,7 +29,7 @@ function InputSkills({ form, name, label }: InputSkillsProps) {
         const skills: string[] = field.value ?? [];
 
         const handleAddSkill = () => {
-          const value = inputRef.current?.value.trim();
+          const value = inputRef.current?.value?.trim();
           if (!value || skills.includes(value)) return;
 
           field.onChange([...skills, value]);
@@ -41,26 +39,18 @@ function InputSkills({ form, name, label }: InputSkillsProps) {
         const handleRemoveSkill = (skill: string) => {
           field.onChange(skills.filter((s) => s !== skill));
         };
-        const handleSaveValue = () => {
-          const value = inputRef.current?.value?.trim();
-          if (!value) return;
-          if (skills.includes(value)) return;
-
-          field.onChange([...skills, value]);
-          inputRef.current!.value = "";
-          setIsOpen(false);
-        };
 
         return (
           <FormItem>
             <FormLabel>{label}</FormLabel>
 
             <FormControl>
-              <>
+              {/* ⬇️ WAJIB DOM ELEMENT */}
+              <div className="space-y-3">
                 <Button
                   type="button"
                   variant="outline"
-                  className="mb-3 w-35"
+                  className="w-35"
                   onClick={() => setIsOpen((prev) => !prev)}
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />
@@ -68,10 +58,10 @@ function InputSkills({ form, name, label }: InputSkillsProps) {
                 </Button>
 
                 {isOpen && (
-                  <div className="flex gap-3 mb-4">
+                  <div className="flex gap-3">
                     <Input
                       ref={inputRef}
-                      placeholder=" "
+                      placeholder="Add skill"
                       className="w-65"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -86,22 +76,24 @@ function InputSkills({ form, name, label }: InputSkillsProps) {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill) => (
-                    <Badge
-                      key={skill}
-                      variant="outline"
-                      className="flex items-center gap-1"
-                    >
-                      {skill}
-                      <XIcon
-                        className="w-3 h-3 cursor-pointer hover:text-red-500"
-                        onClick={() => handleRemoveSkill(skill)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </>
+                {skills.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((skill) => (
+                      <Badge
+                        key={skill}
+                        variant="outline"
+                        className="flex items-center gap-1"
+                      >
+                        {skill}
+                        <XIcon
+                          className="w-3 h-3 cursor-pointer hover:text-red-500"
+                          onClick={() => handleRemoveSkill(skill)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </FormControl>
 
             <FormMessage />

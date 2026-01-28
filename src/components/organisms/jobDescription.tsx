@@ -32,6 +32,14 @@ export function JobDescriptionEditor({
   if (!editorLoaded || !CKEditor || !ClassicEditor) {
     return <p className="text-sm text-muted-foreground">Loading editor...</p>;
   }
+  const stripHtml = (html: string) => {
+    return html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
 
   return (
     <Controller
@@ -43,7 +51,9 @@ export function JobDescriptionEditor({
             editor={ClassicEditor}
             data={field.value || ""}
             onChange={(_: unknown, editor: Editor) => {
-              field.onChange(editor.getData());
+              const html = editor.getData();
+              const cleanText = stripHtml(html);
+              field.onChange(cleanText);
             }}
             onBlur={field.onBlur}
           />

@@ -16,7 +16,10 @@ import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
+import { signIn } from "next-auth/react";
+import { title } from "process";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 function SignInPage() {
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
@@ -25,7 +28,18 @@ function SignInPage() {
       password: "",
     },
   });
-  const onSubmit = (val: z.infer<typeof signInFormSchema>) => console.log(val);
+  const router = useRouter();
+  const onSubmit = async (val: z.infer<typeof signInFormSchema>) => {
+    const authenticated = await signIn("credentials", {
+      ...val,
+      redirect: false,
+    });
+    if (authenticated?.error) {
+      toast.error("Email or Password maybe wrong");
+      return;
+    }
+    await router.push("/");
+  };
   return (
     <div className="relative w-full h-screen">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">

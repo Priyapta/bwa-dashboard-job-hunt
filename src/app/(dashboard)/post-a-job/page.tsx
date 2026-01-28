@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeftIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSession } from "next-auth/react";
 
 import { z } from "zod";
 import {
@@ -35,8 +36,20 @@ import { useFieldArray } from "react-hook-form";
 import DialogAddBenefit from "@/components/DialogAddBenefit";
 import { InputBenefit } from "@/components/InputDialogAddBenefit";
 import { Button } from "@/components/ui/button";
+import useSWR from "swr";
+import { fetcher } from "@/lib/utils";
+import { CategoryJob, Job } from "@prisma/client";
 
+import moment from "moment";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 export default function page() {
+  const { data: session } = useSession();
+  const { data, error, isLoading } = useSWR<CategoryJob[]>(
+    "api/job/categories",
+    fetcher,
+  );
+
   const [editorLoaded, setEditorLoaded] = useState<boolean>(false);
   const form = useForm<z.infer<typeof jobFormSchema>>({
     resolver: zodResolver(jobFormSchema),
@@ -58,10 +71,52 @@ export default function page() {
     control: form.control,
     name: "benefits",
   });
-  const onSubmit = (val: z.infer<typeof jobFormSchema>) => {
-    console.log(val);
-    console.log("BENEFITS:", val.benefits);
+  const router = useRouter();
+  const onSubmit = async (val: z.infer<typeof jobFormSchema>) => {
+    try {
+      if (!session?.user?.id) {
+        toast.error("You must be logged in");
+        return;
+      }
+
+      const body = {
+        applicantsCount: 0,
+        benefits: val.benefits,
+        categoryId: val.categoryId || null,
+        companyId: session.user.id,
+        datePosted: new Date(),
+        dueDate: moment().add(1, "month").toDate(),
+        jobType: val.jobType,
+        need: 20,
+        niceToHaves: val.niceToHaves,
+        requiredSkills: val.requiredSkills,
+        description: val.jobDescription,
+        responsibility: val.responsibility,
+        roles: val.roles,
+        salaryFrom: val.salaryFrom,
+        salaryTo: val.salaryTo,
+        whoYouAre: val.whoYouAre,
+      };
+
+      const res = await fetch("/api/job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      toast.success("Job posted successfully");
+      router.push("/job-listings");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Failed to post job";
+      toast.error(message);
+    }
   };
+
   useEffect(() => {
     setEditorLoaded(true);
   }, []);
@@ -151,7 +206,7 @@ export default function page() {
               <span className="text-center">to</span>
               <FormField
                 control={form.control}
-                name="salaryFrom"
+                name="salaryTo"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -177,19 +232,24 @@ export default function page() {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="w-45">
-                      <SelectValue placeholder="Select Job Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Light</SelectItem>
-                      <SelectItem value="dark">Dark</SelectItem>
-                      <SelectItem value="system">System</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-45 border border-gray-800 focus:border-gray-900 focus:ring-1 focus:ring-gray-900">
+                        <SelectValue placeholder="Select Job Categories" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {data?.map((item: any) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
                 </FormItem>
               )}
             />
@@ -233,7 +293,9 @@ export default function page() {
           </FieldInput>
 
           <div className="flex justify-end my-2">
-            <Button size={"lg"}>Do a Review</Button>
+            <Button type="submit" size={"lg"}>
+              Do a Review
+            </Button>
           </div>
         </form>
       </Form>

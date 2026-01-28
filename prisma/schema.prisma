@@ -10,7 +10,7 @@ datasource db {
 model CategoryJob {
   id   String @id @default(cuid())
   name String
-  jobs Job[]
+  Job  Job[]
 }
 
 model Industry {
@@ -65,26 +65,26 @@ model Companyoverview {
 }
 
 model Job {
-  id             String       @id @default(cuid())
-  roles          String
-  datePosted     DateTime
-  dueDate        DateTime
-  jobType        String
-  application    Int
-  need           Int
-  salaryFrom     String
-  salaryTo       String
-  requiredSkills String[]
-  description    String
-  responsibilty  String
-  whoYouAre      String
-  niceToHaves    String
-  benefits       Json
-  companyId      String?
-  categoryId     String?
-  applicants     Applicant[]
-  CategoryJob    CategoryJob? @relation(fields: [categoryId], references: [id])
-  Company        Company?     @relation(fields: [companyId], references: [id])
+  id              String       @id @default(cuid())
+  roles           String
+  datePosted      DateTime
+  dueDate         DateTime
+  jobType         String
+  applicantsCount Int
+  need            Int
+  salaryFrom      String
+  salaryTo        String
+  requiredSkills  String[]
+  description     String
+  responsibility  String
+  whoYouAre       String
+  niceToHaves     String
+  benefits        Json
+  companyId       String?
+  categoryId      String?
+  applicants      Applicant[]
+  CategoryJob     CategoryJob? @relation(fields: [categoryId], references: [id])
+  Company         Company?     @relation(fields: [companyId], references: [id])
 }
 
 model User {
