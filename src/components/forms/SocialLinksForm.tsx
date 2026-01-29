@@ -16,20 +16,46 @@ import {
 import FieldInput from "../organisms/FieldInput";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-
-function SocialLinksForm() {
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { CompanySocialMedia } from "@prisma/client";
+type SocialMediaFormProps = {
+  detail: CompanySocialMedia | undefined;
+};
+function SocialLinksForm({ detail }: SocialMediaFormProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
   const form = useForm<z.infer<typeof SocialMediaFormSchema>>({
     resolver: zodResolver(SocialMediaFormSchema),
     defaultValues: {
-      facebook: "",
-      instagram: "",
-      twitter: "",
-      youtube: "",
+      facebook: detail?.facebook ?? "",
+      instagram: detail?.instagram ?? "",
+      twitter: detail?.twitter ?? "",
+      youtube: detail?.youtube ?? "",
+      linkedin: detail?.linkedin ?? "",
     },
   });
-
-  const onSubmit = (val: z.infer<typeof SocialMediaFormSchema>) => {
-    console.log(val);
+  console.log(detail);
+  const onSubmit = async (val: z.infer<typeof SocialMediaFormSchema>) => {
+    try {
+      const body = {
+        ...val,
+        companyId: session?.user.id,
+      };
+      await fetch("/api/company/social-media", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      await router.refresh();
+      toast("Edit Social Media Success");
+    } catch (error) {
+      toast("Please Try Again");
+      console.log(error);
+    }
   };
   return (
     <Form {...form}>
@@ -94,6 +120,23 @@ function SocialLinksForm() {
                 <FormLabel>Youtube</FormLabel>
                 <FormControl>
                   <Input placeholder="https://youtube.com/twitter" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="linkedin"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Linkedin</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="https://instagram.com/twitter"
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />

@@ -41,36 +41,75 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, fetcher } from "@/lib/utils";
 import InputSkills from "../InputSkills";
 import CKEditor from "../organisms/CkeEditor";
+import useSWR from "swr";
+import { Companyoverview, Industry } from "@prisma/client";
+import { supabaseUpdateFile, supabaseUploadFile } from "@/lib/supabase";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export default function OverViewForms() {
+interface overfiewForms {
+  detail: Companyoverview | undefined;
+}
+export default function OverViewForms({ detail }: overfiewForms) {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [date, setDate] = React.useState<Date>();
   const form = useForm<z.infer<typeof overviewformSchema>>({
     resolver: zodResolver(overviewformSchema),
     defaultValues: {
-      name: "",
-      website: "",
-      location: "",
-      employee: "",
-      industry: "",
-      techStack: [],
-      description: "",
-      dateFounded: undefined,
-      image: undefined,
+      name: detail?.name ?? "",
+      website: detail?.website ?? "",
+      location: detail?.location ?? "",
+      employee: detail?.employee ?? "",
+      industry: detail?.industry ?? "",
+      techStack: detail?.techStack ?? [],
+      description: detail?.description ?? "",
+      dateFounded: detail?.dateFounded ?? undefined,
+      image: detail?.image ?? "",
     },
   });
 
-  const onSubmit = (val: z.infer<typeof overviewformSchema>) => {
-    console.log(val);
+  const onSubmit = async (val: z.infer<typeof overviewformSchema>) => {
+    try {
+      let filename = "";
+      if (typeof val.image === "object") {
+        const uploadImg = await supabaseUploadFile(val.image, "company");
+        filename = uploadImg.filename;
+      } else {
+        filename = val.image;
+      }
+      const body = {
+        ...val,
+        image: filename,
+        companyId: session?.user.id,
+      };
+      await fetch("api/company/overview", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      await toast("Edt Profile Succes");
+
+      router.refresh();
+    } catch (error) {
+      await toast("Please try again");
+      console.log(error);
+    }
   };
 
   const [editorLoaded, setEditorLoaded] = useState<boolean>(false);
+  const { data } = useSWR<Industry[]>("/api/company/industry", fetcher);
 
   useEffect(() => {
     setEditorLoaded(true);
   });
+
   return (
     <div>
       <TitleForm
@@ -100,7 +139,7 @@ export default function OverViewForms() {
                   <FormControl>
                     <Input placeholder="Twitter" {...field} />
                   </FormControl>
-                  <FormDescription>At least 80 character</FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -113,9 +152,9 @@ export default function OverViewForms() {
                   <FormItem>
                     <FormLabel>Website</FormLabel>
                     <FormControl>
-                      <Input placeholder="htpps://twitter.com" {...field} />
+                      <Input placeholder="Location" {...field} />
                     </FormControl>
-                    <FormDescription>At least 80 character</FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -126,24 +165,8 @@ export default function OverViewForms() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Location</FormLabel>
-
                     <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="w-45">
-                          <SelectValue placeholder="Select Location" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          {LOCATION_OPTIONS.map((col) => (
-                            <SelectItem key={col.id} value={col.id}>
-                              {col.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Input placeholder="htpps://twitter.com" {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -194,9 +217,9 @@ export default function OverViewForms() {
                           <SelectValue placeholder="Industry" />
                         </SelectTrigger>
                         <SelectContent>
-                          {LOCATION_OPTIONS.map((col) => (
-                            <SelectItem key={col.id} value={col.id}>
-                              {col.label}
+                          {data?.map((item: Industry) => (
+                            <SelectItem key={item.id} value={item.id}>
+                              {item.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

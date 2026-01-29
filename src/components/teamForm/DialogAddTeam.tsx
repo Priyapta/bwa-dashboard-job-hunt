@@ -24,7 +24,12 @@ import { TeamFormSchema } from "@/lib/form-schema";
 import z from "zod";
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 function DialogAddTeam() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const form = useForm<z.infer<typeof TeamFormSchema>>({
     resolver: zodResolver(TeamFormSchema),
     defaultValues: {
@@ -35,8 +40,23 @@ function DialogAddTeam() {
     },
   });
 
-  const onSubmit = (val: z.infer<typeof TeamFormSchema>) => {
-    console.log(val);
+  const onSubmit = async (val: z.infer<typeof TeamFormSchema>) => {
+    try {
+      const body = {
+        ...val,
+        companyId: session?.user.id,
+      };
+      await fetch("/api/company/teams", {
+        method: "POST",
+        headers: { "Content-Type": "applicaton/json" },
+        body: JSON.stringify(body),
+      });
+      toast("Add Member Success");
+      await router.refresh();
+    } catch (error) {
+      toast("Please try again");
+      console.log(error);
+    }
   };
   return (
     <Dialog>

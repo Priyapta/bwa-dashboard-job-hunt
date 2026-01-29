@@ -17,10 +17,14 @@ import {
 
 import ButtonActionTable from "./ButtonActionTable";
 import { Badge } from "../ui/badge";
-export default function Applicants() {
+import { Applicant } from "@prisma/client";
+
+type ApplicantsProps = {
+  applicants: Applicant[] | undefined;
+};
+export default function Applicants({ applicants }: ApplicantsProps) {
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
           {JOB_APPLICANT_COLUMNS.map((item: string, i: number) => (
@@ -30,9 +34,9 @@ export default function Applicants() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {JOB_APPLICANT_DATA.map((item: any, i: number) => (
+        {applicants?.map((item: any, i: number) => (
           <TableRow key={item.roles + i}>
-            <TableCell>{item.name}</TableCell>
+            <TableCell>{item.user.name}</TableCell>
             <TableCell>
               <Badge>{item.appliedDate}</Badge>
             </TableCell>

@@ -45,7 +45,6 @@ function InputSkills({ form, name, label }: InputSkillsProps) {
             <FormLabel>{label}</FormLabel>
 
             <FormControl>
-              {/* ⬇️ WAJIB DOM ELEMENT */}
               <div className="space-y-3">
                 <Button
                   type="button"

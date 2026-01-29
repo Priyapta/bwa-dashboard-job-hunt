@@ -34,6 +34,7 @@ model CompanySocialMedia {
   twitter   String
   facebook  String
   linkedin  String
+  instagram String
   youtube   String
   companyId String?
   Company   Company? @relation(fields: [companyId], references: [id])
@@ -76,12 +77,12 @@ model Job {
   salaryTo        String
   requiredSkills  String[]
   description     String
-  responsibility  String
   whoYouAre       String
   niceToHaves     String
   benefits        Json
   companyId       String?
   categoryId      String?
+  responsibility  String
   applicants      Applicant[]
   CategoryJob     CategoryJob? @relation(fields: [categoryId], references: [id])
   Company         Company?     @relation(fields: [companyId], references: [id])

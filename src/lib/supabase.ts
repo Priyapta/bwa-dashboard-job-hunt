@@ -19,25 +19,28 @@ export const supabaseClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_PUBLIC_KEY!!,
 );
 export const supabaseUploadFile = async (
-  file: File | string,
+  file: File,
   bucket: "company" | "applicant",
 ) => {
   const filename = `${createId(6)}.jpg`;
+
   const { data, error } = await supabaseClient.storage
     .from(bucket)
-    .upload("public/avatar1.png" + filename, file, {
+    .upload(`public/${filename}`, file, {
       cacheControl: "3600",
       upsert: false,
     });
+
   return { data, error, filename };
 };
+
 export const supabaseGetPublicUrl = (
   filename: string,
   bucket: "company" | "applicant",
 ) => {
   const { data } = supabaseClient.storage
     .from(bucket)
-    .getPublicUrl("folder/" + filename);
+    .getPublicUrl("public/" + filename);
   return {
     publicUrl: data.publicUrl,
   };
@@ -48,7 +51,7 @@ export const supabaseDeleteFile = async (
 ) => {
   const { data, error } = await supabaseClient.storage
     .from(bucket)
-    .remove(["folder/" + filename]);
+    .remove(["public/" + filename]);
   return {
     data,
     error,

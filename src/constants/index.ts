@@ -29,7 +29,7 @@ export const JOB_LISTING_DATA = [
   },
 ];
 
-export const JOB_APPLICANT_COLUMNS: string[] = ["Name", "Applied Date"];
+export const JOB_APPLICANT_COLUMNS: string[] = ["Name"];
 
 export const JOB_APPLICANT_DATA = [
   {

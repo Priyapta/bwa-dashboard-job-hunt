@@ -44,9 +44,7 @@ export const overviewformSchema = z.object({
   name: z.string().min(3, {
     message: "Name is required",
   }),
-  image: z.any().refine((file) => file?.name, {
-    message: "Image is required",
-  }),
+  image: z.any(),
   website: z.string().min(5, { message: "Website Required" }),
   location: z.string().min(5, { message: "Location Required" }),
   employee: z.string().min(5, { message: "Employee Required" }),
@@ -97,6 +95,7 @@ export const SocialMediaFormSchema = z.object({
   instagram: z.string().min(5, { message: "Instagram link is required" }),
   twitter: z.string().min(5, { message: "Twitter link is required" }),
   youtube: z.string().min(5, { message: "Youtube link is required" }),
+  linkedin: z.string().min(5, { message: "Linkedin is Required" }),
 });
 
 export const TeamFormSchema = z.object({
